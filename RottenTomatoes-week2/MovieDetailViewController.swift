@@ -23,10 +23,7 @@ class MovieDetailViewController: UIViewController {
     //    println("received data: \(movie)")
         ProgressHUD.show("Fetching movie details..")
         self.loadMovieDetail()
-    //    ProgressHUD.dismiss()
-   //     println(self.movie["title"])
-   //     println(self.movie["synopsis"])
-        scrollView.contentSize = CGSize(width: synopsisLabel.frame.width, height: synopsisLabel.frame.height)
+       scrollView.contentSize = CGSize(width: synopsisLabel.frame.width, height: synopsisLabel.frame.height)
         titleLabel.text = NSString(string: self.movie["title"] as String)
         var posters = self.movie["posters"] as NSDictionary
         var posterUrl = posters["detailed"] as String
@@ -37,15 +34,12 @@ class MovieDetailViewController: UIViewController {
         largeImageView.setImageWithURL(NSURL(string: NSString(string: posterUrl as String)))
         synopsisLabel.text = NSString(string: self.movie["synopsis"] as String)
         ProgressHUD.showSuccess("Successfully loaded movie details")
-        // Do any additional setup after loading the view.
-  //      ProgressHUD.dismiss()
-    }
+  }
 
     func loadMovieDetail()  {
         var movieId = self.movie["id"] as String
         var url = "http://api.rottentomatoes.com/api/public/v1.0/movies/" + movieId + ".json"
- //       url.stringByReplacingOccurrencesOfString("{movieID}", withString: self.movie["id"] as String)
-        println("api url: \(url)")
+ //       println("api url: \(url)")
         var request = NSURLRequest(URL: NSURL(string: url))
         NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue()) { (response: NSURLResponse!, data: NSData!, error: NSError!) -> Void in
             if(data == nil) {
@@ -54,20 +48,13 @@ class MovieDetailViewController: UIViewController {
                 println("error in geting movie details")
                 ProgressHUD.dismiss()
                 ProgressHUD.showError("Couldn't fetch movie details")
-      //          return false
             } else {
                 //hide the error label
                 self.errorLabel.alpha = 0
                 var object = NSJSONSerialization.JSONObjectWithData(data, options: nil, error: nil) as NSDictionary
-      //          println("movie object: \(data)")
                 self.movie = object
-      //           var posterURL = (object["posters"] as NSDictionary)["detailed"] as String
-       //         self.movie["posterUrl"] = posterURL.stringByReplacingOccurrencesOfString("_tmb.jpg", withString: "_det.jpg")
-               // self.movie["posterUrl"] as String = (self.movie["posterUrl"] as String).stringByReplacingOccurrencesOfString("_tmb.jpg", withString: "_det.jpg")
-        //        self.movie = object as [NSDictionary]
                 ProgressHUD.showSuccess("successfully fetched movie details")
-      //          return true
-            }
+             }
         }
      //   return true
     }

@@ -39,13 +39,8 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
     func loadMovies() {
         ProgressHUD.show("Loading movies..")
         var request = NSURLRequest(URL: NSURL(string: self.url))
-    //    println(request)
         NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue()) { (response: NSURLResponse!, data: NSData!, error: NSError!) -> Void in
             self.refreshControl.endRefreshing()
-    //        ProgressHUD.dismiss()
-     //       println("data: \(data)")
-     //       println("response: \(response)")
-     //       println("error:  \(error)")
             if(data == nil) {
                 //show the error label
                 self.errorLabel.alpha = 1
@@ -93,29 +88,7 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
     func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
         return 100
     }
-    /*
-     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        var movie = movies[indexPath.row]
         
-    //    cell.titleLabel.text = movie["title"] as? String
-    //    cell.synopsisLabel.text = movie["synopsis"] as? String
-        
-        var posters = movie["posters"] as NSDictionary
-        var posterUrl = posters["thumbnail"] as String
-        
-   //     cell.imageView?.setImageWithURL(NSURL(string: posterUrl))
-
-        
-        var dmc = MovieDetailViewController()
-        dmc.movieTitle = posterUrl
-        dmc.title = movie["title"] as String!
-        dmc.movieDescription = movie["synopsis"] as String!
-        //dmc.titleLabel.text = movie["synopsis"] as? String
-        navigationController?.pushViewController(dmc, animated: true)
-        
-    }
-    */
-    
     // MARK: - Navigation
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
