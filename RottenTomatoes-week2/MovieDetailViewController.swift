@@ -10,30 +10,78 @@ import UIKit
 
 class MovieDetailViewController: UIViewController {
     
-    var movieTitle: String = ""
-    var movieDescription: String = ""
+    var movie: NSDictionary!
     
+    @IBOutlet weak var errorLabel: UILabel!
+    @IBOutlet weak var scrollView: UIScrollView!
+    @IBOutlet weak var synopsisLabel: UILabel!
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var largeImageView: UIImageView!
     override func viewDidLoad() {
         super.viewDidLoad()
-        println(self.movieTitle)
-        println(self.movieDescription)
-        if((titleLabel) != nil) {
-            titleLabel.text = NSString(string: self.movieTitle)
-        }
-        if((largeImageView) != nil) {
-            largeImageView.setImageWithURL(NSURL(string: NSString(string: self.movieDescription)))
-        }
+        self.navigationItem.title = self.movie["title"] as? String
+    //    println("received data: \(movie)")
+        ProgressHUD.show("Fetching movie details..")
+        self.loadMovieDetail()
+    //    ProgressHUD.dismiss()
+   //     println(self.movie["title"])
+   //     println(self.movie["synopsis"])
+        scrollView.contentSize = CGSize(width: synopsisLabel.frame.width, height: synopsisLabel.frame.height)
+        titleLabel.text = NSString(string: self.movie["title"] as String)
+        var posters = self.movie["posters"] as NSDictionary
+        var posterUrl = posters["detailed"] as String
+        posterUrl = posterUrl.stringByReplacingOccurrencesOfString("_tmb.jpg", withString: "_det.jpg")
+    //    posterUrl.stringByReplacingCharactersInRange(, withString: <#String#>
+        println("poster URL : \(posterUrl)")
+        
+        largeImageView.setImageWithURL(NSURL(string: NSString(string: posterUrl as String)))
+        synopsisLabel.text = NSString(string: self.movie["synopsis"] as String)
+        ProgressHUD.showSuccess("Successfully loaded movie details")
         // Do any additional setup after loading the view.
+  //      ProgressHUD.dismiss()
     }
 
+    func loadMovieDetail()  {
+        var movieId = self.movie["id"] as String
+        var url = "http://api.rottentomatoes.com/api/public/v1.0/movies/" + movieId + ".json"
+ //       url.stringByReplacingOccurrencesOfString("{movieID}", withString: self.movie["id"] as String)
+        println("api url: \(url)")
+        var request = NSURLRequest(URL: NSURL(string: url))
+        NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue()) { (response: NSURLResponse!, data: NSData!, error: NSError!) -> Void in
+            if(data == nil) {
+                //show the error label
+                self.errorLabel.alpha = 1
+                println("error in geting movie details")
+                ProgressHUD.dismiss()
+                ProgressHUD.showError("Couldn't fetch movie details")
+      //          return false
+            } else {
+                //hide the error label
+                self.errorLabel.alpha = 0
+                var object = NSJSONSerialization.JSONObjectWithData(data, options: nil, error: nil) as NSDictionary
+      //          println("movie object: \(data)")
+                self.movie = object
+      //           var posterURL = (object["posters"] as NSDictionary)["detailed"] as String
+       //         self.movie["posterUrl"] = posterURL.stringByReplacingOccurrencesOfString("_tmb.jpg", withString: "_det.jpg")
+               // self.movie["posterUrl"] as String = (self.movie["posterUrl"] as String).stringByReplacingOccurrencesOfString("_tmb.jpg", withString: "_det.jpg")
+        //        self.movie = object as [NSDictionary]
+                ProgressHUD.showSuccess("successfully fetched movie details")
+      //          return true
+            }
+        }
+     //   return true
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
     
 
+    override func viewDidAppear(animated: Bool) {
+     //   ProgressHUD.show("Showing movie details..")
+    }
+    
     /*
     // MARK: - Navigation
 
